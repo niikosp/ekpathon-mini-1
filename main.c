@@ -125,6 +125,7 @@ void print_arrivals(int bus_index, int* bus_indices, int num_stops) {
   return;
 }
 
+//want to take the chosen stop number and return it to the your_awesome_feature_menu() function
 void print_arrivals1(int bus_index, int* bus_indices, int num_stops) {
   clearScreen();
   printf("\n---------------------------------------------------\n");
@@ -136,8 +137,11 @@ void print_arrivals1(int bus_index, int* bus_indices, int num_stops) {
     i++;
   }
   printf("\n---------------------------------------------------\n");
+  /*
   printf("Enter the number of the stop you want to choose:\n");
   scanf("%d", &i);
+  
+
   if (i < 1 || i > num_stops) {
     printf("Wrong Input! Try again.\n");
     print_arrivals(bus_index, bus_indices, num_stops);
@@ -147,6 +151,7 @@ void print_arrivals1(int bus_index, int* bus_indices, int num_stops) {
   //individual_stop_arrivals(stop_index, i - 1);
   clearScreen();
   return;
+  */
 }
 
 void arrivals_menu() {
@@ -189,44 +194,42 @@ void your_awesome_feature_menu() {
   int bus_index = index_of_bus(bus_choice, direction);
   int num_stops = 0;
   int* bus_indices = grab_bus_indices(bus_index, &num_stops);
+  int chosen;
   print_arrivals1(bus_index, bus_indices, num_stops);
 
-  printf("hello\n");
-  //we took the stop number from the user and we will find the stop code and name
-  int stop_number;
-  scanf("%d", &stop_number);
-  int stop_index = bus_indices[stop_number - 1];
-  int stop_code = atoi(bus_stops[stop_index][0]);
-  char stop_code_str[7];
-  sprintf(stop_code_str, "%06d", stop_code);
-  char* stop_name = bus_stops[stop_index][1];
-  printf("Stop Code: %s\n", stop_code_str);
-  printf("Stop Name: %s\n", stop_name);
-  //open the json file and read the information
-  FILE* fp = fopen("proeksoxi_250.json", "r");
-  if (fp == NULL) {
-    printf("Error opening file\n");
-    return;
+
+  //ramps for wheelchair access
+  printf("Enter the number of the stop you're interested in: \n");
+  char stop_name[20];
+  scanf("%s", stop_name);
+  int identical = strcmp(stop_name, "2ndSXOLEIO");
+  printf("\nACCESSIBILITY CHECK - ΠΡΟΣΒΑΣΙΜΟΤΗΤΑ:\n");
+  if(identical == 0){
+    printf("\n");
+    printf("Η στάση %s διαθέτει ράμπα για πρόσβαση με αναπηρικό αμαξίδιο.\n", stop_name);
+    printf("Η στάση %s έχει στέγαστρο για προστασία από τον ήλιο και τη βροχή.\n", stop_name);
+    printf("Η στάση %s διαθέτει καθίσματα για αναμονή.\n", stop_name);
+    printf("\n");
   }
-  char buffer[1024];
-  fread(buffer, 1024, 1, fp);
-  fclose(fp);
-  //parse the json file and find the information for the stop code
-  char* stop_info = strstr(buffer, stop_code_str);
-  if (stop_info == NULL) {
-    printf("No information found for this stop\n");
-    return;
+
+  printf("CONNECTIVITY CHECK - ΣΥΝΔΕΣΙΜΟΤΗΤΑ:\n");
+  if(identical == 0){
+    printf("\n");
+    printf("Η στάση %s δεν διαθέτει άμεση σύνδεση με τραμ ή μετρό.\n", stop_name);
   }
-  char* stop_info_start = strchr(stop_info, ':');
-  char* stop_info_end = strchr(stop_info_start, '}');
-  if (stop_info_start == NULL || stop_info_end == NULL) {
-    printf("No information found for this stop\n");
-    return;
-  }
-  char stop_info_str[1024];
-  strncpy(stop_info_str, stop_info_start + 2, stop_info_end - stop_info_start - 3);
-  stop_info_str[stop_info_end - stop_info_start - 3] = '\0';
-  printf("Information: %s\n", stop_info_str);
+
+
+
+  
+  char** me_proeksoxi = {"2ndSXOLEIO", "PANEPISTHMIOYPOLI", "3rdSXOLEIO", "4thSXOLEIO", "NOSOKOMEIOEYAGGELISMOS"};
+  char** xwris_proeksoxi = {"EUFRONIOY"};
+
+  
+
+
+
+
+ 
 
 
 

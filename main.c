@@ -125,6 +125,30 @@ void print_arrivals(int bus_index, int* bus_indices, int num_stops) {
   return;
 }
 
+void print_arrivals1(int bus_index, int* bus_indices, int num_stops) {
+  clearScreen();
+  printf("\n---------------------------------------------------\n");
+  printf("%s:\n", bus_lines[bus_index]);
+  int i = 0;
+  while (i < num_stops) {
+    int stop_index = bus_indices[i];
+    printf("%d. %s\n", i + 1, bus_stops[stop_index][1]);
+    i++;
+  }
+  printf("\n---------------------------------------------------\n");
+  printf("Enter the number of the stop you want to choose:\n");
+  scanf("%d", &i);
+  if (i < 1 || i > num_stops) {
+    printf("Wrong Input! Try again.\n");
+    print_arrivals(bus_index, bus_indices, num_stops);
+    return;
+  }
+  int stop_index = bus_indices[i - 1];
+  //individual_stop_arrivals(stop_index, i - 1);
+  clearScreen();
+  return;
+}
+
 void arrivals_menu() {
   clearScreen();
   print_bus_lines();
@@ -152,7 +176,61 @@ void arrivals_menu() {
 void your_awesome_feature_menu() {
   clearScreen();
   printf("\n---------------------------------------------------\n");
-  printf("ADD YOUR FEATURE HERE\n");
+  printf("Connectibility & Accesibility\n");
+  //print the bus lines and let the user choose one
+  print_bus_lines();
+  int bus_choice;
+  scanf("%d", &bus_choice);
+  //print the stops of the bus line and let the user choose one
+  int direction = 0;
+  if (bus_choice != 250 && bus_choice != 666) {
+    direction = find_direction();
+  }
+  int bus_index = index_of_bus(bus_choice, direction);
+  int num_stops = 0;
+  int* bus_indices = grab_bus_indices(bus_index, &num_stops);
+  print_arrivals1(bus_index, bus_indices, num_stops);
+
+  printf("hello\n");
+  //we took the stop number from the user and we will find the stop code and name
+  int stop_number;
+  scanf("%d", &stop_number);
+  int stop_index = bus_indices[stop_number - 1];
+  int stop_code = atoi(bus_stops[stop_index][0]);
+  char stop_code_str[7];
+  sprintf(stop_code_str, "%06d", stop_code);
+  char* stop_name = bus_stops[stop_index][1];
+  printf("Stop Code: %s\n", stop_code_str);
+  printf("Stop Name: %s\n", stop_name);
+  //open the json file and read the information
+  FILE* fp = fopen("proeksoxi_250.json", "r");
+  if (fp == NULL) {
+    printf("Error opening file\n");
+    return;
+  }
+  char buffer[1024];
+  fread(buffer, 1024, 1, fp);
+  fclose(fp);
+  //parse the json file and find the information for the stop code
+  char* stop_info = strstr(buffer, stop_code_str);
+  if (stop_info == NULL) {
+    printf("No information found for this stop\n");
+    return;
+  }
+  char* stop_info_start = strchr(stop_info, ':');
+  char* stop_info_end = strchr(stop_info_start, '}');
+  if (stop_info_start == NULL || stop_info_end == NULL) {
+    printf("No information found for this stop\n");
+    return;
+  }
+  char stop_info_str[1024];
+  strncpy(stop_info_str, stop_info_start + 2, stop_info_end - stop_info_start - 3);
+  stop_info_str[stop_info_end - stop_info_start - 3] = '\0';
+  printf("Information: %s\n", stop_info_str);
+
+
+
+ 
   printf("Press Enter to go back to the main menu...\n");
   getchar();
   getc(stdin);
@@ -168,7 +246,7 @@ void homepage() {
   printf("\n---------------------------------------------------\n");
   printf("You are at the homepage of the OASA app.\n");
   printf("Choose an option:\n");
-  printf("Bus Departures (Press 1) | Bus Stops Arrivals (Press 2) | YOUR NEW FEATURE (Press 3) | Press 0 to exit the app. \n");
+  printf("Bus Departures (Press 1) | Bus Stops Arrivals (Press 2) | Connectivity & Accessibility (Press 3) | Press 0 to exit the app. \n");
   int choice = 0;
   // user-input
   scanf("%d", &choice);
